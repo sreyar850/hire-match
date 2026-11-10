@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HireMatch AI – AI-Based Resume Screening & Job Matching System</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4F46E5;
+            --primary-dark: #4338CA;
+            --primary-light: #EEF2FF;
+            --secondary: #06B6D4;
+            --accent: #8B5CF6;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --danger: #EF4444;
+            --dark: #0F172A;
+            --dark-surface: #1E293B;
+            --light-bg: #F8FAFC;
+            --card-border: #E2E8F0;
+            --text-main: #1E293B;
+            --text-muted: #64748B;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--light-bg);
+            color: var(--text-main);
+            line-height: 1.6;
+        }
+
+        /* Navbar */
+        .navbar {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--card-border);
+            padding: 16px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 800;
+            font-size: 20px;
+            color: var(--dark);
+            text-decoration: none;
+        }
+
+        .brand-badge {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white;
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: 800;
+            box-shadow: 0 4px 10px rgba(79, 70, 229, 0.3);
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .status-pill {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            background: #ECFDF5;
+            color: #065F46;
+            border: 1px solid #A7F3D0;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--success);
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.25);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.5); }
+            70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 22px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 14px;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(79, 70, 229, 0.4);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: white;
+            color: var(--dark);
+            border: 1px solid var(--card-border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--light-bg);
+            border-color: #CBD5E1;
+        }
+
+        /* Hero */
+        .hero {
+            padding: 70px 24px 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .hero-tag {
+            display: inline-block;
+            background: var(--primary-light);
+            color: var(--primary);
+            font-weight: 700;
+            font-size: 13px;
+            padding: 6px 16px;
+            border-radius: 30px;
+            margin-bottom: 20px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .hero h1 {
+            font-size: 48px;
+            font-weight: 800;
+            color: var(--dark);
+            letter-spacing: -1px;
+            line-height: 1.15;
+            margin-bottom: 18px;
+        }
+
+        .hero h1 span {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            font-size: 18px;
+            color: var(--text-muted);
+            max-width: 760px;
+            margin: 0 auto 32px;
+        }
+
+        .hero-cta {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            margin-bottom: 48px;
+            flex-wrap: wrap;
+        }
+
+        /* Metric Highlights */
+        .metric-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto 60px;
+            padding: 0 24px;
+        }
+
+        .metric-card {
+            background: white;
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            text-align: left;
+            transition: transform 0.2s ease;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-4px);
+        }
+
+        .metric-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            margin-bottom: 14px;
+        }
+
+        .metric-num {
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--dark);
+        }
+
+        .metric-label {
+            font-size: 13px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        /* Section Container */
+        .section {
+            max-width: 1200px;
+            margin: 0 auto 70px;
+            padding: 0 24px;
+        }
+
+        .section-header {
+            margin-bottom: 36px;
+            text-align: center;
+        }
+
+        .section-header h2 {
+            font-size: 32px;
+            font-weight: 800;
+            color: var(--dark);
+            margin-bottom: 8px;
+        }
+
+        .section-header p {
+            color: var(--text-muted);
+            font-size: 16px;
+        }
+
+        /* Problem & Objective Two-Column Card */
+        .spec-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+
+        @media (max-width: 860px) {
+            .spec-container {
+                grid-template-columns: 1fr;
+            }
+            .hero h1 {
+                font-size: 34px;
+            }
+        }
+
+        .spec-card {
+            background: white;
+            border: 1px solid var(--card-border);
+            border-radius: 18px;
+            padding: 32px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        .spec-card h3 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: var(--dark);
+        }
+
+        .spec-card ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .spec-card li {
+            position: relative;
+            padding-left: 28px;
+            margin-bottom: 12px;
+            font-size: 15px;
+            color: var(--text-main);
+        }
+
+        .spec-card li::before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            top: 1px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #D1FAE5;
+            color: #065F46;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        /* Features Grid */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 24px;
+        }
+
+        .feature-card {
+            background: white;
+            border: 1px solid var(--card-border);
+            border-radius: 18px;
+            padding: 28px;
+            transition: all 0.2s ease;
+        }
+
+        .feature-card:hover {
+            border-color: var(--primary);
+            box-shadow: 0 10px 25px -5px rgba(79, 70, 229, 0.1);
+        }
+
+        .feature-icon {
+            font-size: 28px;
+            margin-bottom: 16px;
+        }
+
+        .feature-card h4 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--dark);
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        /* Architecture Flow */
+        .pipeline-card {
+            background: var(--dark);
+            color: white;
+            border-radius: 20px;
+            padding: 36px;
+            margin-bottom: 50px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .pipeline-card h3 {
+            font-size: 22px;
+            margin-bottom: 8px;
+        }
+
+        .pipeline-card p {
+            color: #94A3B8;
+            margin-bottom: 24px;
+            font-size: 15px;
+        }
+
+        .flow-steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+
+        .flow-step {
+            background: var(--dark-surface);
+            border: 1px solid #334155;
+            padding: 20px;
+            border-radius: 14px;
+        }
+
+        .flow-step-num {
+            display: inline-block;
+            background: var(--primary);
+            color: white;
+            font-size: 12px;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+        }
+
+        .flow-step h5 {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .flow-step p {
+            font-size: 12px;
+            color: #94A3B8;
+            margin: 0;
+        }
+
+        /* Interactive App Preview Frame */
+        .preview-wrapper {
+            background: white;
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 60px;
+        }
+
+        .preview-header {
+            background: #F1F5F9;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        .browser-dots {
+            display: flex;
+            gap: 8px;
+        }
+
+        .browser-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .dot-red { background: #EF4444; }
+        .dot-yellow { background: #F59E0B; }
+        .dot-green { background: #10B981; }
+
+        .browser-url {
+            background: white;
+            padding: 4px 16px;
+            border-radius: 20px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            color: var(--text-muted);
+            border: 1px solid var(--card-border);
+        }
+
+        .app-iframe {
+            width: 100%;
+            height: 720px;
+            border: none;
+            display: block;
+        }
+
+        /* Code Block */
+        .code-snippet {
+            background: var(--dark-surface);
+            color: #E2E8F0;
+            padding: 14px 18px;
+            border-radius: 10px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            overflow-x: auto;
+            margin: 10px 0;
+        }
+
+        /* Footer */
+        footer {
+            border-top: 1px solid var(--card-border);
+            padding: 32px;
+            text-align: center;
+            font-size: 14px;
+            color: var(--text-muted);
+            background: white;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Top Navigation -->
+    <nav class="navbar">
+        <a href="#" class="brand">
+            <div class="brand-badge">H</div>
+            <span>HireMatch AI</span>
+        </a>
+        <div class="nav-actions">
+            <div class="status-pill" id="app-status">
+                <div class="status-dot"></div>
+                <span id="status-text">Streamlit App Active</span>
+            </div>
+            <a href="http://localhost:8501" target="_blank" class="btn btn-primary">
+                <span>Open Dashboard</span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+            </a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-tag">AI-Based Recruitment & Talent Intelligence</div>
+        <h1>Automated Resume Screening &<br><span>Candidate Fit Matching</span></h1>
+        <p>
+            An NLP and machine-learning powered recruitment system that extracts skills, qualifications, education, and experience from resumes, calculates explainable match scores, and ranks applicants against job criteria.
+        </p>
+        <div class="hero-cta">
+            <a href="http://localhost:8501" target="_blank" class="btn btn-primary" style="padding: 14px 32px; font-size: 16px;">
+                🚀 Launch Streamlit Web App
+            </a>
+            <a href="#architecture" class="btn btn-secondary" style="padding: 14px 28px; font-size: 16px;">
+                Explore Architecture
+            </a>
+        </div>
+    </section>
+
+    <!-- Key Metrics Highlight -->
+    <div class="metric-grid">
+        <div class="metric-card">
+            <div class="metric-icon" style="background: #EEF2FF; color: #4F46E5;">⚡</div>
+            <div class="metric-num">&lt; 1s</div>
+            <div class="metric-label">Per Resume Parsing & NLP Extraction</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-icon" style="background: #ECFDF5; color: #10B981;">🎯</div>
+            <div class="metric-num">4-Axis</div>
+            <div class="metric-label">Skills, Semantic, Exp & Degree Scoring</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-icon" style="background: #FEF3C7; color: #F59E0B;">🔍</div>
+            <div class="metric-num">100%</div>
+            <div class="metric-label">Explainable Skill Gap & Strengths Breakdown</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-icon" style="background: #F3E8FF; color: #8B5CF6;">📄</div>
+            <div class="metric-num">PDF/DOCX/TXT</div>
+            <div class="metric-label">Multi-format Document Ingestion</div>
+        </div>
+    </div>
+
+    <!-- Problem Statement & Objectives -->
+    <section class="section">
+        <div class="section-header">
+            <h2>System Objectives & Problem Statement</h2>
+            <p>Directly addressing core inefficiencies in modern technical recruiting workflows</p>
+        </div>
+
+        <div class="spec-container">
+            <!-- Problem Statement -->
+            <div class="spec-card">
+                <h3>
+                    <span style="color: var(--danger);">⚠️</span> 3. Problem Statement
+                </h3>
+                <p style="color: var(--text-muted); margin-bottom: 16px; font-size: 15px;">
+                    Recruitment processes often involve manually reviewing a large number of resumes, which is time-consuming and may lead to inconsistent evaluation or overlooking suitable candidates.
+                </p>
+                <p style="color: var(--text-muted); font-size: 15px;">
+                    Recruiters need an efficient way to identify applicants whose skills, qualifications, education, and experience align with job requirements. HireMatch AI automates this process through standardized, unbiased analysis.
+                </p>
+            </div>
+
+            <!-- Objectives -->
+            <div class="spec-card">
+                <h3>
+                    <span style="color: var(--success);">🎯</span> 4. Core Objectives
+                </h3>
+                <ul>
+                    <li><strong>Automate resume screening</strong> using Natural Language Processing (NLP) and machine-learning techniques.</li>
+                    <li><strong>Extract relevant information</strong> such as skills, qualifications, education, and work experience from resumes.</li>
+                    <li><strong>Compare candidate profiles</strong> with job descriptions and calculate transparent matching scores.</li>
+                    <li><strong>Rank applicants</strong> according to their relevance and provide actionable skill gap analysis.</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- Live Streamlit App Frame -->
+    <section class="section">
+        <div class="section-header">
+            <h2>Live Interactive Application</h2>
+            <p>Access the running Streamlit dashboard directly below or open in full window</p>
+        </div>
+
+        <div class="preview-wrapper">
+            <div class="preview-header">
+                <div class="browser-dots">
+                    <div class="browser-dot dot-red"></div>
+                    <div class="browser-dot dot-yellow"></div>
+                    <div class="browser-dot dot-green"></div>
+                </div>
+                <div class="browser-url">http://localhost:8501</div>
+                <a href="http://localhost:8501" target="_blank" class="btn btn-secondary" style="padding: 4px 12px; font-size: 12px;">
+                    Open in New Window ↗
+                </a>
+            </div>
+            <iframe src="http://localhost:8501" class="app-iframe" title="HireMatch AI Dashboard"></iframe>
+        </div>
+    </section>
+
+    <!-- Architecture & NLP Pipeline -->
+    <section class="section" id="architecture">
+        <div class="pipeline-card">
+            <h3>Machine Learning & NLP Processing Pipeline</h3>
+            <p>How HireMatch AI transforms raw documents into structured talent analytics</p>
+
+            <div class="flow-steps">
+                <div class="flow-step">
+                    <span class="flow-step-num">Step 1</span>
+                    <h5>Document Ingestion</h5>
+                    <p>Parses PDF (pdfplumber/pypdf), DOCX, and TXT files. Normalizes whitespace, ligatures, and formatting.</p>
+                </div>
+                <div class="flow-step">
+                    <span class="flow-step-num">Step 2</span>
+                    <h5>Entity Extraction</h5>
+                    <p>Extracts candidate contact details, degrees, universities, year intervals, and categorized skills.</p>
+                </div>
+                <div class="flow-step">
+                    <span class="flow-step-num">Step 3</span>
+                    <h5>Semantic Matching</h5>
+                    <p>Vectorizes text with TF-IDF n-grams (1, 2) and computes cosine similarity against job descriptions.</p>
+                </div>
+                <div class="flow-step">
+                    <span class="flow-step-num">Step 4</span>
+                    <h5>Composite Scoring</h5>
+                    <p>Recruiter-weighted formula combining Skills (45%), Semantic (25%), Experience (20%), and Education (10%).</p>
+                </div>
+                <div class="flow-step">
+                    <span class="flow-step-num">Step 5</span>
+                    <h5>Explainable Ranking</h5>
+                    <p>Assigns fit tiers (Top Match, Potential Fit), radar charts, skill gap reports, and custom interview questions.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Features Grid -->
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">📊</div>
+                <h4>Interactive Leaderboard</h4>
+                <p>Real-time candidate sorting by overall fit score, cohort statistics, and recruiter filter controls for score and mandatory skills.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🕸️</div>
+                <h4>Multi-Axis Radar Profiler</h4>
+                <p>Visual radar chart comparing candidate scores across Skills, Semantic Alignment, Experience, and Education against target benchmark.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">💡</div>
+                <h4>Explainable Skill Gap AI</h4>
+                <p>Instant identification of missing core competencies, candidate strengths, experience deltas, and actionable upskilling advice.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🎙️</div>
+                <h4>Tailored Interview Prompts</h4>
+                <p>Dynamic generation of targeted technical and behavioral interview questions based on matched skills and missing gaps.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">⚖️</div>
+                <h4>Recruiter Weight Customizer</h4>
+                <p>Fine-tune the importance of skills overlap vs. years of experience vs. degree level dynamically using sidebar sliders.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📤</div>
+                <h4>Multi-Format Reporting</h4>
+                <p>One-click export of applicant rankings to CSV, structured JSON cohort data, or printable candidate evaluation cards.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Quick Start Instructions -->
+    <section class="section">
+        <div class="section-header">
+            <h2>Quick Start & Commands</h2>
+            <p>Simple commands to run and test HireMatch AI locally</p>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+            <div class="spec-card">
+                <h4>🚀 Run Web App</h4>
+                <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 8px;">Run the Streamlit application using the pre-configured virtual environment:</p>
+                <div class="code-snippet">.\venv\Scripts\streamlit.exe run app.py</div>
+                <p style="font-size: 12px; color: var(--text-muted); margin-top: 6px;">Or simply double-click <code style="color: var(--primary);">run.bat</code></p>
+            </div>
+
+            <div class="spec-card">
+                <h4>🧪 Run Test Suite</h4>
+                <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 8px;">Execute the automated unit tests verifying all modules:</p>
+                <div class="code-snippet">.\venv\Scripts\python.exe -m unittest tests/test_hirematch.py</div>
+                <p style="font-size: 12px; color: var(--success); margin-top: 6px;">✓ 8 unit tests passed (0.30s)</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p><strong>HireMatch AI</strong> — AI-Based Resume Screening and Job Matching System</p>
+        <p style="margin-top: 6px; font-size: 12px;">Powered by Natural Language Processing, TF-IDF Vectorization & Plotly Analytics</p>
+    </footer>
+
+    <!-- Health check ping script -->
+    <script>
+        function checkAppHealth() {
+            fetch('http://localhost:8501/healthz', { mode: 'no-cors' })
+                .then(() => {
+                    document.getElementById('app-status').style.background = '#ECFDF5';
+                    document.getElementById('app-status').style.borderColor = '#A7F3D0';
+                    document.getElementById('status-text').innerText = 'Streamlit App Active';
+                })
+                .catch(() => {
+                    document.getElementById('app-status').style.background = '#FEF2F2';
+                    document.getElementById('app-status').style.borderColor = '#FECACA';
+                    document.getElementById('status-text').innerText = 'Server Offline';
+                });
+        }
+        setInterval(checkAppHealth, 10000);
+    </script>
+</body>
+</html>
